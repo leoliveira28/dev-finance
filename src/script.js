@@ -22,19 +22,19 @@ const Modal = {
 
 const transactions = [
     {
-       
+
         description: 'Agua',
         amount: -30000,
         date: '23/02/2021',
     },
     {
-        
+
         description: 'Website',
         amount: 500000,
         date: '23/01/2021',
     },
     {
-        
+
         description: 'Internet',
         amount: -2000,
         date: '23/01/2021',
@@ -46,7 +46,7 @@ const Transaction = {
     add(transaction) {
         Transaction.all.push(transaction)
 
-        
+
         App.reload()
 
     },
@@ -60,10 +60,10 @@ const Transaction = {
         //somar as entradas
         let income = 0;
         Transaction.all.forEach(transaction => {
-            if(transaction.amount > 0) {
+            if (transaction.amount > 0) {
                 income += transaction.amount;
             }
-            
+
         })
         return income;
     },
@@ -71,10 +71,10 @@ const Transaction = {
         //somar as saidas
         let expense = 0;
         Transaction.all.forEach((transaction) => {
-            if(transaction.amount < 0) {
+            if (transaction.amount < 0) {
                 expense += transaction.amount;
             }
-            
+
         })
         return expense;
     },
@@ -119,11 +119,11 @@ const DOM = {
 
     updabeBalance() {
         document.getElementById('incomeDisplay')
-        .innerHTML = Utils.formatCurrency(Transaction.incomes())
+            .innerHTML = Utils.formatCurrency(Transaction.incomes())
         document.getElementById('expenseDisplay')
-        .innerHTML = Utils.formatCurrency(Transaction.expenses())
+            .innerHTML = Utils.formatCurrency(Transaction.expenses())
         document.getElementById('totalDisplay')
-        .innerHTML = Utils.formatCurrency(Transaction.total())
+            .innerHTML = Utils.formatCurrency(Transaction.total())
     },
 
     clearTransactions() {
@@ -132,6 +132,15 @@ const DOM = {
 }
 
 const Utils = {
+    formatAmount(value) {
+       value = Number(value) * 100 
+       return value
+    },
+    formatDate(date) {
+        const splitedDate = date.split("-")
+        return `${splitedDate[2]}/${splitedDate[1]}/${splitedDate[0]}`
+
+    },
     formatCurrency(value) {
         const signal = Number(value) < 0 ? '-' : ""
         value = String(value).replace(/\D/g, "")
@@ -144,14 +153,84 @@ const Utils = {
     }
 }
 
+const Form = {
+    description: document.querySelector('input#description'),
+    amount: document.querySelector('input#amount'),
+    date: document.querySelector('input#date'),
+    
+    getValues() {
+        return {
+            description: Form.description.value,
+            amount: Form.amount.value,
+            date: Form.date.value
+        }
+    },
+
+    
+    validateFields() {
+        const { amount, date, description } = Form.getValues()
+        if(description.trim() === "" || amount.trim() === "" || date.trim() === "") {
+            throw new Error("Por favor preencha todos os campos")
+        } 
+    },
+
+    formatValues() {
+        let { amount, date, description } = Form.getValues()
+        amount = Utils.formatAmount(amount)
+        date = Utils.formatDate(date)
+        return { amount, date, description }
+
+
+    },
+    
+    clearFields(){
+        Form.description.value = ""
+        Form.amount.value = ""
+        Form.date.value = ""
+    },
+
+    
+    
+    
+    submit(event){
+    event.preventDefault()
+        try {
+            Form.validateFields()
+            const transaction = Form.formatValues()
+
+    //verificar se todas as informções foram preenchidas
+   
+    // formatar dados para salvar 
+    
+    // salvar 
+    Transaction.add(transaction)
+    // apagar dados do formulario
+    Form.clearFields()
+    //fechar modal
+    // atualizar a aplicação
+            
+        } catch (error) {
+            alert(error.message)
+            
+        }
+
+
+
+    
+    
+
+
+}
+}
+
 const App = {
     init() {
-        Transaction.all.forEach(transaction =>  {
+        Transaction.all.forEach(transaction => {
             DOM.addTransaction(transaction)
-        
+
         })
 
-        
+
     },
 
 
@@ -161,18 +240,7 @@ const App = {
     },
 }
 
-
-
-
 App.init()
 
 
 
-Transaction.remove('4')
-
-Transaction.add({
-    id: 10,
-    description: 'oi',
-    amount: 10,
-    date: '23/05/2021'
-})
