@@ -117,12 +117,12 @@ const DOM = {
         return html
     },
 
-    updabeBalance() {
-        document.getElementById('incomeDisplay')
+    updateBalance() {
+        document.getElementById("incomeDisplay")
             .innerHTML = Utils.formatCurrency(Transaction.incomes())
-        document.getElementById('expenseDisplay')
+        document.getElementById("expenseDisplay")
             .innerHTML = Utils.formatCurrency(Transaction.expenses())
-        document.getElementById('totalDisplay')
+        document.getElementById("totalDisplay")
             .innerHTML = Utils.formatCurrency(Transaction.total())
     },
 
@@ -166,14 +166,14 @@ const Form = {
         }
     },
 
-    
+  //verificar se todas as informções foram preenchidas  
     validateFields() {
         const { amount, date, description } = Form.getValues()
         if(description.trim() === "" || amount.trim() === "" || date.trim() === "") {
             throw new Error("Por favor preencha todos os campos")
         } 
     },
-
+// formatar dados para salvar
     formatValues() {
         let { amount, date, description } = Form.getValues()
         amount = Utils.formatAmount(amount)
@@ -182,7 +182,7 @@ const Form = {
 
 
     },
-    
+    // apagar dados do formulario
     clearFields(){
         Form.description.value = ""
         Form.amount.value = ""
@@ -198,16 +198,18 @@ const Form = {
             Form.validateFields()
             const transaction = Form.formatValues()
 
-    //verificar se todas as informções foram preenchidas
+    
    
-    // formatar dados para salvar 
+     
     
     // salvar 
     Transaction.add(transaction)
-    // apagar dados do formulario
+    
     Form.clearFields()
     //fechar modal
+    Modal.close()
     // atualizar a aplicação
+    App.reload()
             
         } catch (error) {
             alert(error.message)
@@ -227,6 +229,7 @@ const App = {
     init() {
         Transaction.all.forEach(transaction => {
             DOM.addTransaction(transaction)
+            DOM.updateBalance()
 
         })
 
